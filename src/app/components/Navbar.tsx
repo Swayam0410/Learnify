@@ -3,10 +3,10 @@ import React from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Home, Flame, Heart, Search, Settings, User } from "lucide-react";
-import { Input } from "@/components/ui/input";
+
 import { Button } from "@/components/ui/button";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../api/auth/[...nextauth]";
+
+
 import { useSession, signOut } from "next-auth/react"
 import SignInPage from "../api/auth/signin/page";
 import ThemeToggle from "./ThemeToggle";
