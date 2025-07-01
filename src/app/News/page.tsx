@@ -72,7 +72,7 @@ useEffect(() => {
 
 const fetchNews = async (category: string) => {
   try {
-    const url = `https://newsapi.org/v2/top-headlines?category=${category}&country=us&apiKey=${api_key}`;
+    const url = `/api/news?category=${category}`;
     const res = await fetch(url);
 
     if (!res.ok) {
