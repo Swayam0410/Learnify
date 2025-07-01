@@ -14,11 +14,11 @@ const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
 
   // Custom rules override
-  {
-    rules: {
-      "@typescript-eslint/no-explicit-any": "off",
-    },
+ {
+  rules: {
+    "@typescript-eslint/no-unused-vars": "off",
   },
+}
 ];
 
 export default eslintConfig;
