@@ -3,8 +3,12 @@
 import React from "react";
 
 const categories = ["general", "health", "technology", "sports", "business", "science", "entertainment"];
+interface CategorySelectorProps {
+  selected: string;
+  onSelect: (category: string) => void;
+}
 
-const CategorySelector = ({ selected, onSelect }) => {
+const CategorySelector = ({ selected, onSelect }: CategorySelectorProps) => {
   return (
     <div className="flex flex-wrap justify-center gap-4 mb-6">
       {categories.map((category) => (
