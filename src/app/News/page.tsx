@@ -5,6 +5,7 @@ import CategorySelector from "./CategorySelector";
 import Header from "../components/Header";
 import SearchBarContext from "../Context/SearchbarContext";
 import { Reorder } from "framer-motion";
+
 import SortableGrid from "../components/SortableGrid";
 
 const MAX_HISTORY = 3;
@@ -72,7 +73,7 @@ useEffect(() => {
 
 const fetchNews = async (category: string) => {
   try {
-    const url = `../api/news?category=${category}`;
+    const url = `/api/news?category=${category}`;
     const res = await fetch(url);
 
     if (!res.ok) {
