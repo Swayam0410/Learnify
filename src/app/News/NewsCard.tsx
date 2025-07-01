@@ -15,7 +15,7 @@ const NewsCard = ({ title, description, url, author, urlToImage ,draggablevalue}
 
 useEffect(() => {
   const existing = JSON.parse(localStorage.getItem("favorites_news") ?? "[]");
-  const found = existing.find((item: any) => item.url === url);
+  const found = existing.find((item: NewsCardProps) => item.url === url);
   setIsFav(!!found);
 }, [url]);
 
