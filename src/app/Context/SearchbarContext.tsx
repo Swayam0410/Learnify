@@ -1,11 +1,33 @@
 "use client";
 
-import { createContext, useState } from "react";
+import {
+  createContext,
+  useState,
+  ReactNode,
+  Dispatch,
+  SetStateAction,
+} from "react";
 import useDebounce from "../useDebounce";
 
-const SearchBarContext = createContext("");
+// 1️⃣ Define the context type
+interface SearchBarContextType {
+  searchInput: string;
+  setSearchInput: Dispatch<SetStateAction<string>>;
+  debouncedSearch: string;
+}
 
-export const SearchBarProvider = ({ children }) => {
+// 2️⃣ Create the context with proper type
+const SearchBarContext = createContext<SearchBarContextType | undefined>(
+  undefined
+);
+
+// 3️⃣ Define props type
+interface SearchBarProviderProps {
+  children: ReactNode;
+}
+
+// 4️⃣ Component with typed props
+export const SearchBarProvider = ({ children }: SearchBarProviderProps) => {
   const [searchInput, setSearchInput] = useState("");
   const debouncedSearch = useDebounce(searchInput, 500);
 
