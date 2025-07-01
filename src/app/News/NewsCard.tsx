@@ -13,15 +13,17 @@ type NewsCardProps = {
 const NewsCard = ({ title, description, url, author, urlToImage ,draggablevalue}: NewsCardProps) => {
   const [isFav, setIsFav] = useState(false);
 
-  useEffect(() => {
-    const existing = JSON.parse(localStorage.getItem("favorites_news")) || [];
-    const found = existing.find(item => item.url === url);
-    setIsFav(!!found);
-  }, [url]);
+useEffect(() => {
+  const existing = JSON.parse(localStorage.getItem("favorites_news") ?? "[]");
+  const found = existing.find((item: any) => item.url === url);
+  setIsFav(!!found);
+}, [url]);
+
 
   const toggleFavorite = () => {
     const key = "favorites_news";
-    const existing = JSON.parse(localStorage.getItem("favorites_news") ?? "[]");
+   const existing = JSON.parse(localStorage.getItem("favorites_news") ?? "[]");
+
 
 
     let updated;
