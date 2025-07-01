@@ -28,7 +28,7 @@ useEffect(() => {
 
     let updated;
     if (isFav) {
-      updated = existing.filter(item => item.url !== url);
+      updated = existing.filter((item: NewsCardProps) => item.url !== url);
     } else {
       updated = [...existing, { title, description, url, author, urlToImage }];
     }
