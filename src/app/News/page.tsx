@@ -18,8 +18,15 @@ const News = () => {
   }
 
   const { debouncedSearch } = context;
+  // At the top of your file or in a types file
+type NewsItem = {
+  title: string;
+  [key: string]: any; // Optional, if there are more unknown fields
+};
 
-  const [news, setNews] = useState([]); // full unfiltered articles
+
+  const [news, setNews] = useState<NewsItem[]>([]);
+// full unfiltered articles
   const [filteredNews, setFilteredNews] = useState([]); // only what we show
   const [selectedCategory, setSelectedCategory] = useState("general");
   const [categoryHistory, setCategoryHistory] = useState<string[]>([]);

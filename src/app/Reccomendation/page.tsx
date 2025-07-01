@@ -13,6 +13,7 @@ const Recommendation = () => {
   }
 
   const { debouncedSearch } = context;
+  
 
   const [movies, setMovies] = useState([]);          // all movies
   const [filteredMovies, setFilteredMovies] = useState([]); // filtered ones
