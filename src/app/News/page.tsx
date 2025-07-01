@@ -68,7 +68,7 @@ type NewsItem = {
     }
   }, [debouncedSearch, news]);
 
-  const fetchNews = async (category) => {
+  const fetchNews = async (category:string) => {
     try {
       const url = `https://newsapi.org/v2/top-headlines?category=${category}&apiKey=${api_key}`;
       const res = await fetch(url);
