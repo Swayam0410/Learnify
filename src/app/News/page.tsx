@@ -58,30 +58,47 @@ type NewsItem = {
   }, [selectedCategory]);
 
   // Search effect — filters based on debouncedSearch + latest fetched articles
-  useEffect(() => {
-    if (!debouncedSearch) {
-      setFilteredNews(news); // reset to all if empty
-    } else {
-      const filtered = news.filter(n =>
-        n.title?.toLowerCase().includes(debouncedSearch.toLowerCase())
-      );
-      setFilteredNews(filtered);
-      console.log(typeof filteredNews[0]);
-    }
-  }, [debouncedSearch, news]);
+useEffect(() => {
+  if (!debouncedSearch) {
+    setFilteredNews(news || []);
+  } else {
+    const filtered = (news || []).filter(n =>
+      n?.title?.toLowerCase().includes(debouncedSearch.toLowerCase())
+    );
+    setFilteredNews(filtered);
+  }
+}, [debouncedSearch, news]);
 
-  const fetchNews = async (category) => {
-    try {
-      const url = `https://newsapi.org/v2/top-headlines?category=${category}&apiKey=${api_key}`;
-      const res = await fetch(url);
-      const data = await res.json();
-      console.log("API Response:", data);
-      setNews(data.articles || []);
-      setFilteredNews(data.articles || []); // also reset filtered
-    } catch (err) {
-      console.log("Error fetching news", err);
+
+const fetchNews = async (category: string) => {
+  try {
+    const url = `https://newsapi.org/v2/top-headlines?category=${category}&country=us&apiKey=${api_key}`;
+    const res = await fetch(url);
+
+    if (!res.ok) {
+      console.error(`API Error: ${res.status} - ${res.statusText}`);
+      setNews([]);
+      setFilteredNews([]);
+      return;
     }
-  };
+
+    const data = await res.json();
+
+    if (!data.articles || !Array.isArray(data.articles)) {
+      console.warn("Unexpected API structure", data);
+      setNews([]);
+      setFilteredNews([]);
+      return;
+    }
+
+    setNews(data.articles);
+    setFilteredNews(data.articles);
+  } catch (err) {
+    console.log("Error fetching news", err);
+    setNews([]);
+    setFilteredNews([]);
+  }
+};
 
   return (
     <div className="p-6">
