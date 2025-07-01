@@ -22,7 +22,10 @@ const News = () => {
   const [news, setNews] = useState([]); // full unfiltered articles
   const [filteredNews, setFilteredNews] = useState([]); // only what we show
   const [selectedCategory, setSelectedCategory] = useState("general");
-  const [categoryHistory, setCategoryHistory] = useState([]);
+  type CategoryType = { id: number; name: string };
+
+const [categoryHistory, setCategoryHistory] = useState<CategoryType[]>([]);
+
   const api_key = process.env.NEXT_PUBLIC_NEWS_API_KEY;
 
   // Load from localStorage on mount
