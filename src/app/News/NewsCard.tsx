@@ -21,7 +21,8 @@ const NewsCard = ({ title, description, url, author, urlToImage ,draggablevalue}
 
   const toggleFavorite = () => {
     const key = "favorites_news";
-    const existing = JSON.parse(localStorage.getItem(key)) || [];
+    const existing = JSON.parse(localStorage.getItem("favorites_news") ?? "[]");
+
 
     let updated;
     if (isFav) {
