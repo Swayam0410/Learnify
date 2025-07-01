@@ -14,7 +14,13 @@ const FavoritesPage = () => {
     social: [],
   });
 
-  const { debouncedSearch } = useContext(SearchBarContext);
+ const context = useContext(SearchBarContext);
+
+  if (!context) {
+    throw new Error("SearchBarContext must be used within a SearchBarProvider");
+  }
+
+  const { debouncedSearch } = context;
   const search = debouncedSearch?.toLowerCase() || "";
 
   useEffect(() => {

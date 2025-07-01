@@ -6,7 +6,13 @@ import SearchBarContext from "../Context/SearchbarContext";
 import { Reorder } from "framer-motion";
 
 const Recommendation = () => {
-  const { debouncedSearch } = useContext(SearchBarContext);
+   const context = useContext(SearchBarContext);
+
+  if (!context) {
+    throw new Error("SearchBarContext must be used within a SearchBarProvider");
+  }
+
+  const { debouncedSearch } = context;
 
   const [movies, setMovies] = useState([]);          // all movies
   const [filteredMovies, setFilteredMovies] = useState([]); // filtered ones

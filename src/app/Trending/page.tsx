@@ -12,7 +12,13 @@ const TrendingPage = () => {
   const [social, setSocial] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const { debouncedSearch } = useContext(SearchBarContext);
+ const context = useContext(SearchBarContext);
+
+  if (!context) {
+    throw new Error("SearchBarContext must be used within a SearchBarProvider");
+  }
+
+  const { debouncedSearch } = context;
   const search = debouncedSearch?.toLowerCase() || "";
 
   const newsKey = process.env.NEXT_PUBLIC_NEWS_API_KEY;

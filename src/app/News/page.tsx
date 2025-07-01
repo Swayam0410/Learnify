@@ -11,7 +11,13 @@ const MAX_HISTORY = 3;
 const LOCAL_STORAGE_KEY = "categoryHistory";
 
 const News = () => {
-  const { debouncedSearch } = useContext(SearchBarContext);
+ const context = useContext(SearchBarContext);
+
+  if (!context) {
+    throw new Error("SearchBarContext must be used within a SearchBarProvider");
+  }
+
+  const { debouncedSearch } = context;
 
   const [news, setNews] = useState([]); // full unfiltered articles
   const [filteredNews, setFilteredNews] = useState([]); // only what we show

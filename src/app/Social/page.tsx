@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useState, useContext } from "react";
 import Header from "../components/Header";
 import SocialCard from "./SocialCard";
@@ -7,7 +6,13 @@ import SearchBarContext from "../Context/SearchbarContext";
 import { Reorder } from "framer-motion";
 
 const Social = () => {
-  const { debouncedSearch } = useContext(SearchBarContext);
+  const context = useContext(SearchBarContext);
+
+  if (!context) {
+    throw new Error("SearchBarContext must be used within a SearchBarProvider");
+  }
+
+  const { debouncedSearch } = context;
 
   const [posts, setPosts] = useState([]);
   const [filteredPosts, setFilteredPosts] = useState([]);
