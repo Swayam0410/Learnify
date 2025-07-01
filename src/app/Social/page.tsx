@@ -163,7 +163,6 @@ const Social = () => {
               subreddit={post.subreddit}
               thumbnail={post.thumbnail}
               draggablevalue={post}
-              isDraggable={true}
             />
               </Reorder.Item>
 

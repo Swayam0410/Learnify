@@ -54,6 +54,7 @@ type NewsItem = {
     setCategoryHistory(updatedHistory);
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedHistory));
     fetchNews(selectedCategory);
+
   }, [selectedCategory]);
 
   // Search effect — filters based on debouncedSearch + latest fetched articles
@@ -65,6 +66,7 @@ type NewsItem = {
         n.title?.toLowerCase().includes(debouncedSearch.toLowerCase())
       );
       setFilteredNews(filtered);
+      console.log(typeof filteredNews[0]);
     }
   }, [debouncedSearch, news]);
 
@@ -100,10 +102,9 @@ type NewsItem = {
 >
   {filteredNews.map((article, index) => (
     <NewsCard
-      key={article.url || index}
+      description={""} url={""} urlToImage={""} key={article.url || index}
       {...article}
-      draggablevalue={true}
-    />
+      draggablevalue={article}    />
   ))}
 </Reorder.Group>
 

@@ -7,7 +7,7 @@ type NewsCardProps = {
   url: string;
   author?: string;
   urlToImage: string;
-  draggablevalue: boolean;
+  draggablevalue: object;
 };
 
 const NewsCard = ({ title, description, url, author, urlToImage ,draggablevalue}: NewsCardProps) => {
