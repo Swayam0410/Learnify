@@ -27,7 +27,7 @@ type NewsItem = {
 
   const [news, setNews] = useState<NewsItem[]>([]);
 // full unfiltered articles
-  const [filteredNews, setFilteredNews] = useState([]); // only what we show
+ const [filteredNews, setFilteredNews] = useState<NewsItem[]>([]);// only what we show
   const [selectedCategory, setSelectedCategory] = useState("general");
   const [categoryHistory, setCategoryHistory] = useState<string[]>([]);
 
