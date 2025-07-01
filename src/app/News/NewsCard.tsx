@@ -1,8 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { ExternalLink, Heart } from "lucide-react";
 import DraggableCard from "../components/DraggableCard";
+type NewsCardProps = {
+  title: string;
+  description: string;
+  url: string;
+  author?: string;
+  urlToImage: string;
+  draggablevalue: boolean;
+};
 
-const NewsCard = ({ title, description, url, author, urlToImage ,draggablevalue}) => {
+const NewsCard = ({ title, description, url, author, urlToImage ,draggablevalue}: NewsCardProps) => {
   const [isFav, setIsFav] = useState(false);
 
   useEffect(() => {
