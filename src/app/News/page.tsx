@@ -102,7 +102,7 @@ type NewsItem = {
     <NewsCard
       key={article.url || index}
       {...article}
-      draggablevalue={article}
+      draggablevalue={true}
     />
   ))}
 </Reorder.Group>
