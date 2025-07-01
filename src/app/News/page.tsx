@@ -68,7 +68,7 @@ type NewsItem = {
     }
   }, [debouncedSearch, news]);
 
-  const fetchNews = async (category:string) => {
+  const fetchNews = async (category) => {
     try {
       const url = `https://newsapi.org/v2/top-headlines?category=${category}&apiKey=${api_key}`;
       const res = await fetch(url);
@@ -103,7 +103,6 @@ type NewsItem = {
       key={article.url || index}
       {...article}
       draggablevalue={article}
-      isDraggable={true}
     />
   ))}
 </Reorder.Group>
