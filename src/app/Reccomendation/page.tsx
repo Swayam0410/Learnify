@@ -6,6 +6,15 @@ import SearchBarContext from "../Context/SearchbarContext";
 import { Reorder } from "framer-motion";
 
 const Recommendation = () => {
+  type MovieResult = {
+  title: string;
+  year: string;
+  imdb?: string;
+  traktId?: number;
+  slug?: string;
+  poster?: string;
+};
+
    const context = useContext(SearchBarContext);
 
   if (!context) {
@@ -15,8 +24,9 @@ const Recommendation = () => {
   const { debouncedSearch } = context;
   
 
-  const [movies, setMovies] = useState([]);          // all movies
-  const [filteredMovies, setFilteredMovies] = useState([]); // filtered ones
+  const [movies, setMovies] = useState<MovieResult[]>([]);
+const [filteredMovies, setFilteredMovies] = useState<MovieResult[]>([]);
+
   const [loading, setLoading] = useState(true);
   const [recentCategories, setRecentCategories] = useState([]);
 
@@ -60,7 +70,7 @@ const Recommendation = () => {
     };
 
     try {
-      const allResults = [];
+      const allResults:MovieResult[] = [];
 
       for (const category of categoryList.length ? categoryList : ["general"]) {
         const traktGenre = genreMap[category] || "drama";
