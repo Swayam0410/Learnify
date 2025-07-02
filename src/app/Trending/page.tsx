@@ -80,7 +80,7 @@ const TrendingPage = () => {
   const fetchTrendingData = async () => {
     try {
       const [newsRes, moviesRes, redditRes] = await Promise.all([
-        fetch(`https://newsapi.org/v2/top-headlines?country=us&apiKey=${newsKey}`),
+        fetch(`/api/news`),
         fetch(`https://api.trakt.tv/movies/popular`, { headers }),
         fetch("https://www.reddit.com/r/popular.json"),
       ]);
