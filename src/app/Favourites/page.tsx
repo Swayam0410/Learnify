@@ -7,42 +7,15 @@ import NewsCard from "../News/NewsCard";
 import SearchBarContext from "../Context/SearchbarContext";
 import { Reorder } from "framer-motion";
 
-interface NewsItem {
-  title: string;
-  url: string;
-  description: string;
-  urlToImage: string;
-  draggablevalue: string;
-}
-
-interface MovieItem {
-  title: string;
-  imdb: string;
-  overview: string;
-  poster_path: string;
-  draggablevalue: string;
-}
-
-interface SocialItem {
-  title: string;
-  author: string;
-  url: string;
-  subreddit: string;
-  draggablevalue: string;
-}
-
 const FavoritesPage = () => {
-  const [favorites, setFavorites] = useState<{
-    news: NewsItem[];
-    movies: MovieItem[];
-    social: SocialItem[];
-  }>({
+  const [favorites, setFavorites] = useState({
     news: [],
     movies: [],
     social: [],
   });
 
-  const context = useContext(SearchBarContext);
+ const context = useContext(SearchBarContext);
+
   if (!context) {
     throw new Error("SearchBarContext must be used within a SearchBarProvider");
   }
@@ -51,20 +24,17 @@ const FavoritesPage = () => {
   const search = debouncedSearch?.toLowerCase() || "";
 
   useEffect(() => {
-    try {
-      setFavorites({
-        news: JSON.parse(localStorage.getItem("favorites_news") || "[]"),
-        movies: JSON.parse(localStorage.getItem("favorites_movies") || "[]"),
-        social: JSON.parse(localStorage.getItem("favorites_social") || "[]"),
-      });
-    } catch (error) {
-      console.error("Error parsing favorites from localStorage", error);
-    }
+    setFavorites({
+      news: JSON.parse(localStorage.getItem("favorites_news") || "[]"),
+      movies: JSON.parse(localStorage.getItem("favorites_movies") || "[]"),
+      social: JSON.parse(localStorage.getItem("favorites_social") || "[]"),
+    });
   }, []);
 
-  const [newsList, setNewsList] = useState<NewsItem[]>([]);
-  const [movieList, setMovieList] = useState<MovieItem[]>([]);
-  const [socialList, setSocialList] = useState<SocialItem[]>([]);
+  // State for reorderable lists
+  const [newsList, setNewsList] = useState<any[]>([]);
+  const [movieList, setMovieList] = useState<any[]>([]);
+  const [socialList, setSocialList] = useState<any[]>([]);
 
   useEffect(() => {
     setNewsList(favorites.news);
@@ -72,15 +42,15 @@ const FavoritesPage = () => {
     setSocialList(favorites.social);
   }, [favorites]);
 
-  const filteredNews = newsList.filter(item =>
+  const filteredNews = newsList.filter((item: any) =>
     item.title?.toLowerCase().includes(search)
   );
 
-  const filteredMovies = movieList.filter(item =>
+  const filteredMovies = movieList.filter((item: any) =>
     item.title?.toLowerCase().includes(search)
   );
 
-  const filteredSocial = socialList.filter(item =>
+  const filteredSocial = socialList.filter((item: any) =>
     item.title?.toLowerCase().includes(search) ||
     item.author?.toLowerCase().includes(search)
   );
@@ -97,20 +67,14 @@ const FavoritesPage = () => {
           </h2>
         ) : (
           <Reorder.Group
-            axis="y"
+            axis="x"
             values={newsList}
             onReorder={setNewsList}
             className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
           >
             {filteredNews.map((item, idx) => (
               <Reorder.Item key={item.url || idx} value={item}>
-                <NewsCard
-                  title={item.title}
-                  url={item.url}
-                  description={item.description}
-                  urlToImage={item.urlToImage}
-                  draggablevalue={item.draggablevalue}
-                />
+                <NewsCard {...item} />
               </Reorder.Item>
             ))}
           </Reorder.Group>
@@ -125,20 +89,14 @@ const FavoritesPage = () => {
           </h2>
         ) : (
           <Reorder.Group
-            axis="y"
+            axis="x"
             values={movieList}
             onReorder={setMovieList}
             className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
           >
             {filteredMovies.map((item, idx) => (
               <Reorder.Item key={item.imdb || idx} value={item}>
-                <MovieCard
-                  title={item.title}
-                  imdb={item.imdb}
-                  overview={item.overview}
-                  poster_path={item.poster_path}
-                  draggablevalue={item.draggablevalue}
-                />
+                <MovieCard {...item} />
               </Reorder.Item>
             ))}
           </Reorder.Group>
@@ -153,20 +111,14 @@ const FavoritesPage = () => {
           </h2>
         ) : (
           <Reorder.Group
-            axis="y"
+            axis="x"
             values={socialList}
             onReorder={setSocialList}
             className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
           >
             {filteredSocial.map((item, idx) => (
               <Reorder.Item key={item.url || idx} value={item}>
-                <SocialCard
-                  title={item.title}
-                  author={item.author}
-                  url={item.url}
-                  subreddit={item.subreddit}
-                  draggablevalue={item.draggablevalue}
-                />
+                <SocialCard {...item} />
               </Reorder.Item>
             ))}
           </Reorder.Group>
@@ -177,3 +129,4 @@ const FavoritesPage = () => {
 };
 
 export default FavoritesPage;
+
