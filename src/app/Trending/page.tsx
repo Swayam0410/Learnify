@@ -35,7 +35,8 @@ const TrendingPage = () => {
   const [news, setNews] = useState<NewsArticle[]>([]);
   const [movies, setMovies] = useState<Movie[]>([]);
   const [social, setSocial] = useState<SocialPost[]>([]);
-  const [trendingItems, setTrendingItems] = useState<TrendingItem[]>([]);
+  const [trendingItems, setTrendingItems] = useState<string[]>([]);
+  const [itemMap, setItemMap] = useState<Record<string, TrendingItem>>({});
   const [loading, setLoading] = useState(true);
 
   const context = useContext(SearchBarContext);
@@ -78,9 +79,10 @@ const TrendingPage = () => {
         fetch("https://www.reddit.com/r/popular.json"),
       ]);
 
-      const news = (await newsRes.json()).articles;
-
+      const newsData = (await newsRes.json()).articles ?? [];
       const rawMovies = await moviesRes.json();
+      const redditData = (await redditRes.json()).data?.children ?? [];
+
       const movies: Movie[] = await Promise.all(
         rawMovies.slice(0, 10).map(async (item: any) => {
           const poster = await fetchPosterFromOMDb(item.title);
@@ -93,12 +95,11 @@ const TrendingPage = () => {
         })
       );
 
-      const redditRaw = (await redditRes.json()).data.children;
-      const social: SocialPost[] = redditRaw.map((post: any) => {
+      const social: SocialPost[] = redditData.map((post: any) => {
         let thumbnail = "https://www.redditstatic.com/icon.png";
-        if (post.data.preview?.images?.[0]?.source?.url) {
+        if (post.data?.preview?.images?.[0]?.source?.url) {
           thumbnail = post.data.preview.images[0].source.url.replace(/&amp;/g, "&");
-        } else if (post.data.thumbnail?.startsWith("http")) {
+        } else if (post.data?.thumbnail?.startsWith("http")) {
           thumbnail = post.data.thumbnail;
         }
 
@@ -110,7 +111,7 @@ const TrendingPage = () => {
         };
       });
 
-      return { news, movies, social };
+      return { news: newsData, movies, social };
     } catch (err) {
       console.error("Failed to fetch trending data", err);
       return { news: [], movies: [], social: [] };
@@ -139,24 +140,27 @@ const TrendingPage = () => {
       item.title?.toLowerCase().includes(search)
     );
 
-    const combined: TrendingItem[] = [
-      ...filteredNews.map((item, idx) => ({
-        id: `news-${idx}-${item.title}`,
-        type: "news",
-        data: item,
-      })),
-      ...filteredMovies.map((item, idx) => ({
-        id: `movie-${idx}-${item.title}`,
-        type: "movie",
-        data: item,
-      })),
-      ...filteredSocial.map((item, idx) => ({
-        id: `social-${idx}-${item.title}`,
-        type: "social",
-        data: item,
-      })),
+    const newItems: Record<string, TrendingItem> = {};
+
+    const combined: string[] = [
+      ...filteredNews.map((item, idx) => {
+        const id = `news-${idx}-${item.title}`;
+        newItems[id] = { id, type: "news", data: item };
+        return id;
+      }),
+      ...filteredMovies.map((item, idx) => {
+        const id = `movie-${idx}-${item.title}`;
+        newItems[id] = { id, type: "movie", data: item };
+        return id;
+      }),
+      ...filteredSocial.map((item, idx) => {
+        const id = `social-${idx}-${item.title}`;
+        newItems[id] = { id, type: "social", data: item };
+        return id;
+      }),
     ];
 
+    setItemMap(newItems);
     setTrendingItems(combined);
   }, [news, movies, social, search]);
 
@@ -171,13 +175,18 @@ const TrendingPage = () => {
         onReorder={setTrendingItems}
         className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
       >
-        {trendingItems.map((item) => (
-          <Reorder.Item key={item.id} value={item}>
-            {item.type === "news" && <NewsCard article={item.data} />}
-            {item.type === "movie" && <MovieCard movie={item.data} />}
-            {item.type === "social" && <SocialCard post={item.data} />}
-          </Reorder.Item>
-        ))}
+        {trendingItems.map((id) => {
+          const item = itemMap[id];
+          if (!item) return null;
+
+          return (
+            <Reorder.Item key={id} value={id}>
+              {item.type === "news" && <NewsCard article={item.data} />}
+              {item.type === "movie" && <MovieCard movie={item.data} />}
+              {item.type === "social" && <SocialCard post={item.data} />}
+            </Reorder.Item>
+          );
+        })}
       </Reorder.Group>
     </div>
   );
