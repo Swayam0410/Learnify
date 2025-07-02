@@ -6,8 +6,6 @@ import Header from "../components/Header";
 import SearchBarContext from "../Context/SearchbarContext";
 import { Reorder } from "framer-motion";
 
-import SortableGrid from "../components/SortableGrid";
-
 const MAX_HISTORY = 3;
 const LOCAL_STORAGE_KEY = "categoryHistory";
 
