@@ -6,10 +6,35 @@ import SocialCard from "../Social/SocialCard";
 import SearchBarContext from "../Context/SearchbarContext";
 import { Reorder } from "framer-motion";
 
+// Types
+interface NewsArticle {
+  title: string;
+  [key: string]: any;
+}
+
+interface Movie {
+  title: string;
+  year?: number;
+  imdb?: string;
+  poster?: string | null;
+}
+
+interface SocialPost {
+  title: string;
+  author: string;
+  url: string;
+  thumbnail: string;
+}
+
+type TrendingItem =
+  | { type: "news"; data: NewsArticle }
+  | { type: "movie"; data: Movie }
+  | { type: "social"; data: SocialPost };
+
 const TrendingPage = () => {
-  const [news, setNews] = useState([]);
-  const [movies, setMovies] = useState([]);
-  const [social, setSocial] = useState([]);
+  const [news, setNews] = useState<NewsArticle[]>([]);
+  const [movies, setMovies] = useState<Movie[]>([]);
+  const [social, setSocial] = useState<SocialPost[]>([]);
   const [loading, setLoading] = useState(true);
 
   const context = useContext(SearchBarContext);
@@ -56,20 +81,20 @@ const TrendingPage = () => {
       const news = (await newsRes.json()).articles;
 
       const rawMovies = await moviesRes.json();
-      const movies = await Promise.all(
-        rawMovies.slice(0, 10).map(async (item) => {
+      const movies: Movie[] = await Promise.all(
+        rawMovies.slice(0, 10).map(async (item: any) => {
           const poster = await fetchPosterFromOMDb(item.title);
           return {
             title: item.title,
             year: item.year,
-            imdb: item.ids.imdb,
+            imdb: item.ids?.imdb,
             poster,
           };
         })
       );
 
       const redditRaw = (await redditRes.json()).data.children;
-      const social = redditRaw.map((post) => {
+      const social: SocialPost[] = redditRaw.map((post: any) => {
         let thumbnail = "https://www.redditstatic.com/icon.png";
 
         if (post.data.preview?.images?.[0]?.source?.url) {
@@ -106,19 +131,17 @@ const TrendingPage = () => {
 
   if (loading) return <p className="p-6">Loading trending content...</p>;
 
-  const filteredNews = news.filter((item: any) =>
+  const filteredNews = news.filter((item) =>
+    item.title?.toLowerCase().includes(search)
+  );
+  const filteredMovies = movies.filter((item) =>
+    item.title?.toLowerCase().includes(search)
+  );
+  const filteredSocial = social.filter((item) =>
     item.title?.toLowerCase().includes(search)
   );
 
-  const filteredMovies = movies.filter((item: any) =>
-    item.title?.toLowerCase().includes(search)
-  );
-
-  const filteredSocial = social.filter((item: any) =>
-    item.title?.toLowerCase().includes(search)
-  );
-
-  const trendingItems = [
+  const trendingItems: TrendingItem[] = [
     ...filteredNews.map((item) => ({ type: "news", data: item })),
     ...filteredMovies.map((item) => ({ type: "movie", data: item })),
     ...filteredSocial.map((item) => ({ type: "social", data: item })),
