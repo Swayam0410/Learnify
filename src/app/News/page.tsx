@@ -98,9 +98,9 @@ const fetchNews = async (category: string) => {
     setFilteredNews([]);
   }
 };
-
-  return (
-    <div className="p-6">
+return (
+  <div className="px-4 py-6">
+    <div className="max-w-4xl mx-auto">
       <Header />
       <h1 className="text-4xl font-bold text-center mb-8 text-zinc-800 dark:text-zinc-100">
         📰 Top Headlines in <span className="text-blue-600 capitalize">{selectedCategory}</span>
@@ -110,22 +110,27 @@ const fetchNews = async (category: string) => {
       <CategorySelector selected={selectedCategory} onSelect={setSelectedCategory} />
 
       {/* News Grid */}
- <Reorder.Group
-  axis="y"
-  values={filteredNews}
-  onReorder={setFilteredNews}
-  className="mt-6 flex flex-col gap-6"
->
-  {filteredNews.map((article, index) => (
-    <NewsCard
-      description={""} url={""} urlToImage={""} key={article.url || index}
-      {...article}
-      draggablevalue={article}    />
-  ))}
-</Reorder.Group>
-
+      <Reorder.Group
+        axis="y"
+        values={filteredNews}
+        onReorder={setFilteredNews}
+        className="mt-6 flex flex-col gap-6"
+      >
+        {filteredNews.map((article, index) => (
+          <NewsCard
+            description={""}
+            url={""}
+            urlToImage={""}
+            key={article.url || index}
+            {...article}
+            draggablevalue={article}
+          />
+        ))}
+      </Reorder.Group>
     </div>
-  );
+  </div>
+);
+
 };
 
 export default News;
