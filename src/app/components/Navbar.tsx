@@ -56,8 +56,16 @@ const { searchInput, setSearchInput } = searchContext;
           <div className="flex items-center gap-2">
             <User className="w-6 h-6" />
             <div>
-              <p className="text-sm font-semibold">Swayam</p>
-              <p className="text-xs text-gray-400">swayam@example.com</p>
+             {session?.user?.email && (
+  <div>
+    <p className="text-sm font-semibold">
+      {session.user.email.split("@")[0]}
+    </p>
+    <p className="text-xs text-gray-400">
+      {session.user.email}
+    </p>
+  </div>
+)}
             </div>
           </div>
         </div>
