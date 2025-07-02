@@ -99,7 +99,7 @@ const fetchNews = async (category: string) => {
   }
 };
 return (
-  <div className="px-4 py-6">
+  <div className="px-4 py-6 lg:mr-[10%]">
     <div className="max-w-4xl mx-auto">
       <Header />
       <h1 className="text-4xl font-bold text-center mb-8 text-zinc-800 dark:text-zinc-100">
