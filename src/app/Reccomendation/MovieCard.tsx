@@ -8,14 +8,15 @@ const MovieCard = ({ title, year, imdb, poster,draggablevalue }) => {
   const [isFav, setIsFav] = useState(false);
 
   useEffect(() => {
-    const existing = JSON.parse(localStorage.getItem("favorites_movies")) || [];
+    const existing = JSON.parse(localStorage.getItem("favorites_movies") || "[]");
     const found = existing.find((item) => item.imdb === imdb);
     setIsFav(!!found);
   }, [imdb]);
 
   const toggleFavorite = () => {
     const key = "favorites_movies";
-    const existing = JSON.parse(localStorage.getItem(key)) || [];
+  const existing = JSON.parse(localStorage.getItem("favorites_movies") || "[]");
+
 
     let updated;
     if (isFav) {
