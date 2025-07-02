@@ -1,17 +1,12 @@
 "use client";
-import React from "react";
+import React, { useState, useContext } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { Home, Flame, Heart, Search, Settings, User } from "lucide-react";
-
+import { Home, Flame, Heart, Settings, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-
-import { useSession, signOut } from "next-auth/react"
+import { useSession } from "next-auth/react";
 import SignInPage from "../api/auth/signin/page";
 import ThemeToggle from "./ThemeToggle";
-
-import { useContext } from "react";
 import SearchBarContext from "../Context/SearchbarContext";
 
 const routes = [
@@ -21,23 +16,37 @@ const routes = [
 ];
 
 const Navbar = ({ children }: { children: React.ReactNode }) => {
-   const { data: session } = useSession()
-  
+  const { data: session } = useSession();
   const pathname = usePathname();
- const searchContext = useContext(SearchBarContext);
-if (!searchContext) throw new Error("SearchBarContext not provided");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
-const { searchInput, setSearchInput } = searchContext;
+  const searchContext = useContext(SearchBarContext);
+  if (!searchContext) throw new Error("SearchBarContext not provided");
 
-  if(!session)return (
-    <>
-      <SignInPage/>
-    </>
-  );
+  const { searchInput, setSearchInput } = searchContext;
+
+  if (!session) return <SignInPage />;
+
+  const username = session.user?.email?.split("@")[0] || "User";
+  const userEmail = session.user?.email || "";
+
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen overflow-hidden">
+      {/* Mobile Backdrop */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-10 bg-black bg-opacity-30 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <aside className="w-64 flex flex-col justify-between">
+      <aside
+        className={`fixed z-20 top-0 left-0 h-full bg-white dark:bg-zinc-900 w-64 transform 
+        ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} 
+        transition-transform duration-300 ease-in-out 
+        md:relative md:translate-x-0 md:flex md:flex-col md:justify-between`}
+      >
         <div>
           <h2 className="text-2xl font-bold px-6 py-4">📚 Learnify</h2>
           <nav className="px-4 space-y-2 mt-4">
@@ -56,39 +65,52 @@ const { searchInput, setSearchInput } = searchContext;
           <div className="flex items-center gap-2">
             <User className="w-6 h-6" />
             <div>
-             {session?.user?.email && (
-  <div>
-    <p className="text-sm font-semibold">
-      {session.user.email.split("@")[0]}
-    </p>
-    <p className="text-xs text-gray-400">
-      {session.user.email}
-    </p>
-  </div>
-)}
+              <p className="text-sm font-semibold">{username}</p>
+              <p className="text-xs text-gray-400">{userEmail}</p>
             </div>
           </div>
         </div>
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col overflow-y-auto">
+      <main className="flex-1 flex flex-col overflow-y-auto ml-0 md:ml-64">
         {/* Topbar */}
-        <div className="flex items-center justify-between  px-6 py-4 shadow">
-          <div className="w-full max-w-xl">
-            <div className="relative">
-             
-              <input
-      type="text"
-      placeholder="Search..."
-      value={searchInput}
-      onChange={(e) => setSearchInput(e.target.value)}
-      className="p-2 border rounded w-full"
-    />
-            </div>
+        <div className="flex items-center justify-between px-4 py-4 shadow">
+          {/* Hamburger (Mobile only) */}
+          <button
+            className="md:hidden p-2 mr-2"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6 text-gray-700 dark:text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
+          </button>
+
+          {/* Search Bar */}
+          <div className="w-full max-w-xl flex-1">
+            <input
+              type="text"
+              placeholder="Search..."
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              className="p-2 border rounded w-full"
+            />
           </div>
-          <div className="flex items-center gap-4">
-            <ThemeToggle/>
+
+          {/* Right Icons */}
+          <div className="flex items-center gap-4 ml-4">
+            <ThemeToggle />
             <Button variant="ghost">
               <Settings className="w-6 h-6 text-gray-700" />
             </Button>
@@ -122,7 +144,7 @@ const NavItem = ({
     <Link
       href={href}
       className={`flex items-center gap-3 w-full px-4 py-2 rounded-md transition ${
-        active ? "bg-gray-800 font-semibold" : "hover:bg-gray-800"
+        active ? "bg-gray-800 text-white font-semibold" : "hover:bg-gray-800"
       }`}
     >
       {icon}
