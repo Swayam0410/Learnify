@@ -24,7 +24,11 @@ const Navbar = ({ children }: { children: React.ReactNode }) => {
    const { data: session } = useSession()
   
   const pathname = usePathname();
-  const { searchInput, setSearchInput } = useContext(SearchBarContext);
+ const searchContext = useContext(SearchBarContext);
+if (!searchContext) throw new Error("SearchBarContext not provided");
+
+const { searchInput, setSearchInput } = searchContext;
+
   if(!session)return (
     <>
       <SignInPage/>
