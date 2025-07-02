@@ -27,18 +27,18 @@ interface SocialPost {
 }
 
 type TrendingItem =
-  | { type: "news"; data: NewsArticle }
-  | { type: "movie"; data: Movie }
-  | { type: "social"; data: SocialPost };
+  | { id: string; type: "news"; data: NewsArticle }
+  | { id: string; type: "movie"; data: Movie }
+  | { id: string; type: "social"; data: SocialPost };
 
 const TrendingPage = () => {
   const [news, setNews] = useState<NewsArticle[]>([]);
   const [movies, setMovies] = useState<Movie[]>([]);
   const [social, setSocial] = useState<SocialPost[]>([]);
+  const [trendingItems, setTrendingItems] = useState<TrendingItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   const context = useContext(SearchBarContext);
-
   if (!context) {
     throw new Error("SearchBarContext must be used within a SearchBarProvider");
   }
@@ -96,7 +96,6 @@ const TrendingPage = () => {
       const redditRaw = (await redditRes.json()).data.children;
       const social: SocialPost[] = redditRaw.map((post: any) => {
         let thumbnail = "https://www.redditstatic.com/icon.png";
-
         if (post.data.preview?.images?.[0]?.source?.url) {
           thumbnail = post.data.preview.images[0].source.url.replace(/&amp;/g, "&");
         } else if (post.data.thumbnail?.startsWith("http")) {
@@ -129,23 +128,39 @@ const TrendingPage = () => {
     getData();
   }, []);
 
+  useEffect(() => {
+    const filteredNews = news.filter((item) =>
+      item.title?.toLowerCase().includes(search)
+    );
+    const filteredMovies = movies.filter((item) =>
+      item.title?.toLowerCase().includes(search)
+    );
+    const filteredSocial = social.filter((item) =>
+      item.title?.toLowerCase().includes(search)
+    );
+
+    const combined: TrendingItem[] = [
+      ...filteredNews.map((item, idx) => ({
+        id: `news-${idx}-${item.title}`,
+        type: "news",
+        data: item,
+      })),
+      ...filteredMovies.map((item, idx) => ({
+        id: `movie-${idx}-${item.title}`,
+        type: "movie",
+        data: item,
+      })),
+      ...filteredSocial.map((item, idx) => ({
+        id: `social-${idx}-${item.title}`,
+        type: "social",
+        data: item,
+      })),
+    ];
+
+    setTrendingItems(combined);
+  }, [news, movies, social, search]);
+
   if (loading) return <p className="p-6">Loading trending content...</p>;
-
-  const filteredNews = news.filter((item) =>
-    item.title?.toLowerCase().includes(search)
-  );
-  const filteredMovies = movies.filter((item) =>
-    item.title?.toLowerCase().includes(search)
-  );
-  const filteredSocial = social.filter((item) =>
-    item.title?.toLowerCase().includes(search)
-  );
-
-  const trendingItems: TrendingItem[] = [
-    ...filteredNews.map((item) => ({ type: "news", data: item })),
-    ...filteredMovies.map((item) => ({ type: "movie", data: item })),
-    ...filteredSocial.map((item) => ({ type: "social", data: item })),
-  ];
 
   return (
     <div className="p-4">
@@ -153,11 +168,11 @@ const TrendingPage = () => {
       <Reorder.Group
         axis="y"
         values={trendingItems}
-        onReorder={() => {}}
+        onReorder={setTrendingItems}
         className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
       >
-        {trendingItems.map((item, index) => (
-          <Reorder.Item key={index} value={item}>
+        {trendingItems.map((item) => (
+          <Reorder.Item key={item.id} value={item}>
             {item.type === "news" && <NewsCard article={item.data} />}
             {item.type === "movie" && <MovieCard movie={item.data} />}
             {item.type === "social" && <SocialCard post={item.data} />}
