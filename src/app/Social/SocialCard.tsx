@@ -27,7 +27,7 @@ const SocialCard: React.FC<RedditPostCardProps> = ({
 
   const toggleFavorite = () => {
     const key = "favorites_social";
-  const existing = JSON.parse(localStorage.getItem("favorites_movies") || "[]");
+  const existing = JSON.parse(localStorage.getItem("favorites_social") || "[]");
 
 
     const updated = isFav
