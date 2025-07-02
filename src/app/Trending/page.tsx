@@ -173,7 +173,7 @@ const TrendingPage = () => {
   if (loading) return <p className="p-6">Loading trending content...</p>;
 
   return (
-    <div className="p-4">
+    <div className="p-4 lg:mr-[10%]">
       <h1 className="text-2xl font-bold mb-4">🔥 Trending</h1>
       <Reorder.Group
         axis="y"
