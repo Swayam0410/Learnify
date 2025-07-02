@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useRef, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Home, Flame, Heart, Settings, User } from "lucide-react";
@@ -19,16 +19,33 @@ const Navbar = ({ children }: { children: React.ReactNode }) => {
   const { data: session } = useSession();
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   const searchContext = useContext(SearchBarContext);
   if (!searchContext) throw new Error("SearchBarContext not provided");
 
   const { searchInput, setSearchInput } = searchContext;
 
-  if (!session) return <SignInPage />;
+  const username = session?.user?.email?.split("@")[0] || "User";
+  const userEmail = session?.user?.email || "";
 
-  const username = session.user?.email?.split("@")[0] || "User";
-  const userEmail = session.user?.email || "";
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowProfileDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  if (!session) return <SignInPage />;
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -75,7 +92,7 @@ const Navbar = ({ children }: { children: React.ReactNode }) => {
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-y-auto ml-0 md:ml-64">
         {/* Topbar */}
-        <div className="flex items-center justify-between px-4 py-4 shadow">
+        <div className="flex items-center justify-between px-4 py-4 shadow relative">
           {/* Hamburger (Mobile only) */}
           <button
             className="md:hidden p-2 mr-2"
@@ -109,16 +126,45 @@ const Navbar = ({ children }: { children: React.ReactNode }) => {
           </div>
 
           {/* Right Icons */}
-          <div className="flex items-center gap-4 ml-4">
+          <div className="flex items-center gap-4 ml-4 relative" ref={dropdownRef}>
             <ThemeToggle />
             <Button variant="ghost">
               <Settings className="w-6 h-6 text-gray-700" />
             </Button>
+
+            {/* Profile Image */}
             <img
               src="https://i.pravatar.cc/40"
               alt="Profile"
-              className="w-10 h-10 rounded-full border"
+              className="w-10 h-10 rounded-full border cursor-pointer"
+              onClick={() => setShowProfileDropdown((prev) => !prev)}
             />
+
+            {/* Profile Dropdown */}
+            {showProfileDropdown && (
+              <div className="absolute right-0 top-14 w-64 bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 shadow-xl rounded-xl p-4 z-50">
+                <div className="flex items-center gap-3">
+                  <img
+                    src="https://i.pravatar.cc/40"
+                    alt="Avatar"
+                    className="w-10 h-10 rounded-full border"
+                  />
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                      {username}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {userEmail}
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <Button className="w-full" variant="outline">
+                    Manage Account
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
