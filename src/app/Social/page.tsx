@@ -5,17 +5,24 @@ import SocialCard from "./SocialCard";
 import SearchBarContext from "../Context/SearchbarContext";
 import { Reorder } from "framer-motion";
 
+// Define interface for post structure
+interface RedditPost {
+  title: string;
+  url: string;
+  subreddit: string;
+  thumbnail: string;
+}
+
 const Social = () => {
   const context = useContext(SearchBarContext);
-
   if (!context) {
     throw new Error("SearchBarContext must be used within a SearchBarProvider");
   }
 
   const { debouncedSearch } = context;
 
-  const [posts, setPosts] = useState([]);
-  const [filteredPosts, setFilteredPosts] = useState([]);
+  const [posts, setPosts] = useState<RedditPost[]>([]);
+  const [filteredPosts, setFilteredPosts] = useState<RedditPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [recentCategories, setRecentCategories] = useState<string[]>([]);
 
@@ -56,7 +63,7 @@ const Social = () => {
       sports: "sports",
     };
 
-    const allPosts: any[] = [];
+    const allPosts: RedditPost[] = [];
 
     for (const category of categoryList.length ? categoryList : ["general"]) {
       const subreddit = subredditMap[category] || "popular";
@@ -76,7 +83,7 @@ const Social = () => {
 
         const data = await res.json();
 
-        const posts = data.data.children.map((child: any) => {
+        const posts: RedditPost[] = data.data.children.map((child: any) => {
           let thumbnail = "https://www.redditstatic.com/icon.png";
           if (child.data.preview?.images?.[0]?.source?.url) {
             thumbnail = child.data.preview.images[0].source.url.replace(/&amp;/g, "&");
@@ -92,18 +99,21 @@ const Social = () => {
           };
         });
 
-        allPosts.push(...posts.slice(0, 5)); // Limit to top 5 per category
+        allPosts.push(...posts.slice(0, 5));
       } catch (error) {
         console.error("Error fetching Reddit posts:", error);
       }
     }
 
     setPosts(allPosts);
-    setFilteredPosts(allPosts); // set initially
+    setFilteredPosts(allPosts);
     setLoading(false);
   };
 
-  // Filter posts based on debounced search
+  useEffect(() => {
+    fetchFromReddit();
+  }, []);
+
   useEffect(() => {
     if (!debouncedSearch) {
       setFilteredPosts(posts);
@@ -115,10 +125,6 @@ const Social = () => {
     }
   }, [debouncedSearch, posts]);
 
-  useEffect(() => {
-    fetchFromReddit();
-  }, []);
-
   return (
     <div className="p-6">
       <Header />
@@ -127,7 +133,7 @@ const Social = () => {
           ? "Reddit posts based on your recent interests"
           : "Popular Reddit posts"}
       </h2>
-      
+
       {recentCategories.length > 0 && (
         <p className="text-sm text-gray-500 mb-6">
           Recent categories:{" "}
@@ -148,27 +154,23 @@ const Social = () => {
         </div>
       ) : filteredPosts.length > 0 ? (
         <Reorder.Group
-  axis="y"
-  values={filteredPosts}
-  onReorder={setFilteredPosts}
-  className="mt-6 flex flex-col gap-6"
-
->
-          {filteredPosts.map((post, idx) => (
-              <Reorder.Item key={post.url} value={post}>
-            <SocialCard
-              key={idx}
-              title={post.title}
-              url={post.url}
-              subreddit={post.subreddit}
-              thumbnail={post.thumbnail}
-              draggablevalue={post}
-            />
-              </Reorder.Item>
-
+          axis="y"
+          values={filteredPosts}
+          onReorder={setFilteredPosts}
+          className="mt-6 flex flex-col gap-6"
+        >
+          {filteredPosts.map((post) => (
+            <Reorder.Item key={post.url} value={post}>
+              <SocialCard
+                title={post.title}
+                url={post.url}
+                subreddit={post.subreddit}
+                thumbnail={post.thumbnail}
+                draggablevalue={post}
+              />
+            </Reorder.Item>
           ))}
-          </Reorder.Group>
-        
+        </Reorder.Group>
       ) : (
         <p className="text-center text-gray-500">
           No Reddit posts found for “{debouncedSearch}”.
