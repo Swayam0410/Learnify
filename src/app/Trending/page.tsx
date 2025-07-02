@@ -8,15 +8,21 @@ import { Reorder } from "framer-motion";
 
 // Types
 interface NewsArticle {
-  title: string;
-  [key: string]: any;
+   title: string;
+  description: string;
+  url: string;
+  author?: string;
+  urlToImage: string;
+  draggablevalue: object;
+
 }
 
 interface Movie {
-  title: string;
-  year?: number;
-  imdb?: string;
-  poster?: string | null;
+  title: any;
+  year: any;
+  imdb: any;
+  poster: any;
+  draggablevalue:any;
 }
 
 interface SocialPost {
@@ -181,9 +187,9 @@ const TrendingPage = () => {
 
           return (
             <Reorder.Item key={id} value={id}>
-              {item.type === "news" && <NewsCard article={item.data} />}
-              {item.type === "movie" && <MovieCard movie={item.data} />}
-              {item.type === "social" && <SocialCard post={item.data} />}
+              {item.type === "news" && <NewsCard {...item.data} />}
+              {item.type === "movie" && <MovieCard {...item.data} />}
+              {item.type === "social" && <SocialCard subreddit={""} draggablevalue={undefined} {...item.data} />}
             </Reorder.Item>
           );
         })}
