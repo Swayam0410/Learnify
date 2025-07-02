@@ -55,7 +55,7 @@ const Recommendation = () => {
     const headers = {
       "Content-Type": "application/json",
       "User-Agent": "MyAppName/1.0.0",
-      "trakt-api-key": TRAKT_API_KEY,
+      "trakt-api-key":TRAKT_API_KEY,
       "trakt-api-version": "2",
     };
 
